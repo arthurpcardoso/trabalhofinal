@@ -1,6 +1,6 @@
 from problem_agent import load_problems, get_problem_by_id
 from execution_agent import run_code
-from tutor_agent import start_socratic_chat, get_socratic_question
+from crew_agents import create_socratic_crew
 
 def select_problem():
     """Exibe os problemas e permite que o usuário selecione um."""
@@ -87,30 +87,19 @@ def main():
             choice = input().lower()
             
             if choice == 's' and failed_test:
-                print("\n--- Chat com o Tutor Socrático ---")
-                print("Para sair do chat e tentar um novo código, digite 'SAIR'.")
+                print("\n--- O Tutor Socrático está pensando em uma dica... ---")
                 
-                # Inicia a sessão de chat
-                chat_session = start_socratic_chat(
+                # Cria e executa a tripulação socrática
+                socratic_crew = create_socratic_crew(
                     problem['description'],
                     user_code,
                     failed_test
                 )
                 
-                # A primeira "pergunta" já foi gerada no start_socratic_chat
-                # então pegamos a resposta do LLM que está no histórico
-                tutor_question = chat_session.history[-1].parts[0].text
+                tutor_question = socratic_crew.kickoff()
+                
                 print(f"\nTutor: {tutor_question}")
 
-                while True:
-                    user_response = input("Você: ")
-                    if user_response.strip().upper() == 'SAIR':
-                        print("\nOk! Vamos tentar novamente.")
-                        break # Sai do loop do chat
-                    
-                    tutor_question = get_socratic_question(chat_session, user_response)
-                    print(f"\nTutor: {tutor_question}")
-            
             print("-------------------------------------\n")
             # O loop principal continua, permitindo uma nova submissão de código
 
