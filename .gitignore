@@ -1,3 +1,4 @@
 .env
 verificar_modelos.py
 .venv
+src\__pycache__
